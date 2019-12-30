@@ -1,7 +1,7 @@
 import GpuInformation from 'paraview-glance/src/components/widgets/GPUInformation';
 import PalettePicker from 'paraview-glance/src/components/widgets/PalettePicker';
 import { BACKGROUND } from 'paraview-glance/src/components/core/VtkView/palette';
-import { Mutations } from 'paraview-glance/src/store/types';
+import { Actions } from 'paraview-glance/src/store/types';
 
 const INTERACTION_STYLES_3D = [
   { text: 'Default', value: '3D' },
@@ -58,34 +58,6 @@ function setFirstPersonMovementSpeed(pxm, speed) {
 
 // ----------------------------------------------------------------------------
 
-function setOrientationAxesVisible(visible) {
-  this.proxyManager.getViews().forEach((view) => {
-    view.setOrientationAxesVisibility(visible);
-    view.renderLater();
-  });
-}
-
-// ----------------------------------------------------------------------------
-
-function setAxisType(type) {
-  this.proxyManager.getViews().forEach((view) => {
-    view.setOrientationAxesType(type);
-  });
-  // will call view.renderLater()
-  this.setPresetToOrientationAxes(this.orientationPreset);
-}
-
-// ----------------------------------------------------------------------------
-
-function setPresetToOrientationAxes(presetName) {
-  this.proxyManager.getViews().forEach((view) => {
-    view.setPresetToOrientationAxes(presetName);
-    view.renderLater();
-  });
-}
-
-// ----------------------------------------------------------------------------
-
 function setAnnotationOpacity(opacity) {
   this.proxyManager
     .getViews()
@@ -95,7 +67,7 @@ function setAnnotationOpacity(opacity) {
 // ----------------------------------------------------------------------------
 
 function pushGlobalSettings() {
-  this.setOrientationAxesVisible(this.orientationAxis);
+  this.$store.dispatch(Actions.SET_GLOBAL_ORIENT_AXIS, this.orientationAxis);
   this.setAnnotationOpacity(this.annotationOpacity);
 }
 
@@ -140,7 +112,7 @@ export default {
         return this.$store.state.global.backgroundColor;
       },
       set(color) {
-        this.$store.commit(Mutations.GLOBAL_BG, color);
+        this.$store.dispatch(Actions.SET_GLOBAL_BG, color);
       },
     },
     interactionStyle3D: {
@@ -148,7 +120,7 @@ export default {
         return this.$store.state.global.interactionStyle3D;
       },
       set(style) {
-        this.$store.commit(Mutations.GLOBAL_INTERACTION_STYLE_3D, style);
+        this.$store.dispatch(Actions.SET_GLOBAL_INTERACTION_STYLE_3D, style);
       },
     },
     firstPersonInteraction() {
@@ -167,7 +139,7 @@ export default {
         return this.$store.state.global.orientationAxis;
       },
       set(flag) {
-        this.$store.commit(Mutations.GLOBAL_ORIENT_AXIS, flag);
+        this.$store.dispatch(Actions.SET_GLOBAL_ORIENT_AXIS, flag);
       },
     },
     orientationPreset: {
@@ -175,7 +147,7 @@ export default {
         return this.$store.state.global.orientationPreset;
       },
       set(preset) {
-        this.$store.commit(Mutations.GLOBAL_ORIENT_PRESET, preset);
+        this.$store.dispatch(Actions.SET_GLOBAL_ORIENT_PRESET, preset);
       },
     },
     axisType: {
@@ -183,15 +155,12 @@ export default {
         return this.$store.state.global.axisType;
       },
       set(axisType) {
-        this.$store.commit(Mutations.GLOBAL_AXIS_TYPE, axisType);
+        this.$store.dispatch(Actions.SET_GLOBAL_AXIS_TYPE, axisType);
       },
     },
   },
   watch: {
-    orientationAxis: setOrientationAxesVisible,
-    orientationPreset: setPresetToOrientationAxes,
     annotationOpacity: setAnnotationOpacity,
-    axisType: setAxisType,
     physicalScale() {
       const view = this.getViewForVR();
       if (view) {
@@ -208,10 +177,7 @@ export default {
       const view = this.getViewForVR();
       return view && !!view.getOpenglRenderWindow().getVrDisplay();
     },
-    setAxisType,
-    setOrientationAxesVisible,
     setAnnotationOpacity,
-    setPresetToOrientationAxes,
     pushGlobalSettings,
     getViewForVR,
     toggleVR(vr) {

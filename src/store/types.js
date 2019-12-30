@@ -17,6 +17,13 @@ export const Actions = objEnum([
   'PREVIOUS_VIEW_POINT',
   'NEXT_VIEW_POINT',
 
+  // globalSettings
+  'SET_GLOBAL_BG',
+  'SET_GLOBAL_ORIENT_AXIS',
+  'SET_GLOBAL_ORIENT_PRESET',
+  'SET_GLOBAL_AXIS_TYPE',
+  'SET_GLOBAL_INTERACTION_STYLE_3D',
+
   // files
   'PROMPT_FOR_FILES',
   'OPEN_FILES',
